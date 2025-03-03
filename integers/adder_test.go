@@ -1,6 +1,7 @@
 package integers
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -13,8 +14,8 @@ func TestAdder(t *testing.T) {
 	}
 }
 
-// func ExampleAdd() {
-// 	sum := Add(1, 5)
-// 	fmt.Println(sum)
-// 	// Output: 6
-// }
+func ExampleAdd() {
+	sum := Add(1, 5)
+	fmt.Println(sum)
+	// Output: 6
+}
