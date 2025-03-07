@@ -5,6 +5,9 @@ import (
 	"fmt"
 )
 
+// ErrInsufficientFunds means a wallet does not have enough Bitcoin to perform a withdraw.
+var ErrInsufficientFunds = errors.New("cannot withdraw, insufficient funds")
+
 // Bitcoin represents a number of Bitcoins.
 type Bitcoin int
 
@@ -32,7 +35,7 @@ func (w *Wallet) Balance() Bitcoin {
 func (w *Wallet) Withdraw(amount Bitcoin) error {
 
 	if amount > w.balance {
-		return errors.New("luck of funds to withdraw")
+		return ErrInsufficientFunds
 	}
 
 	w.balance -= amount
