@@ -1,6 +1,9 @@
 package arrays
 
-import "testing"
+import (
+	"slices"
+	"testing"
+)
 
 func TestSum(t *testing.T) {
 	t.Run("collection of 5 elements", func(t *testing.T) {
@@ -21,4 +24,13 @@ func TestSum(t *testing.T) {
 			t.Errorf("got %d want %d given, %v", got, want, numbers)
 		}
 	})
+}
+
+func TestSumAll(t *testing.T) {
+	got := SumAll([]int{1, 2}, []int{3, 4})
+	want := []int{3, 7}
+
+	if !slices.Equal(got, want) {
+		t.Errorf("want %d got %d", got, want)
+	}
 }
