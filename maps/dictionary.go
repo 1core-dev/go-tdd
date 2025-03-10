@@ -1,11 +1,15 @@
 package dictionary
 
 const (
+
 	// ErrNotFound means the definition could not be found for the given word
 	ErrWordExists = DictionaryErr("cannot add word because it already exists")
 
 	// ErrWordExists means you are trying to add a word that is already known
 	ErrNotFound = DictionaryErr("could not find the word you were looking for")
+
+	// ErrWordDoesNotExist occurs when trying to perform an operation on a word not in the dictionary
+	ErrWordDoesNotExist = DictionaryErr("cannot perform operation on word because it does not exist")
 )
 
 // DictionaryErr are errors that can happen when interacting with the dictionary.
@@ -41,6 +45,17 @@ func (d Dictionary) Add(word, definition string) error {
 	return nil
 }
 
-func (d Dictionary) Update(word, definition string) {
-	d[word] = definition
+func (d Dictionary) Update(word, definition string) error {
+	_, err := d.Search(word)
+
+	switch err {
+	case ErrNotFound:
+		return ErrWordDoesNotExist
+	case nil:
+		d[word] = definition
+	default:
+		return err
+	}
+
+	return nil
 }
