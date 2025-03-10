@@ -3,12 +3,23 @@ package dictionary
 import "testing"
 
 func TestSearch(t *testing.T) {
-	dictionary := map[string]string{"test": "test value"}
+	dictionary := Dictionary{"test": "test value"}
 
-	got := Search(dictionary, "test")
-	want := "test value"
+	t.Run("known word", func(t *testing.T) {
+		got, _ := dictionary.Search("test")
+		want := "test value"
 
-	assertStrings(t, got, want)
+		assertStrings(t, got, want)
+	})
+
+	t.Run("unknown word", func(t *testing.T) {
+		_, got := dictionary.Search("unknown")
+		if got == nil {
+			t.Fatal("expected to get an error.")
+		}
+		assertError(t, got, ErrNotFound)
+	})
+
 }
 
 func assertStrings(t testing.TB, got, want string) {
@@ -16,5 +27,13 @@ func assertStrings(t testing.TB, got, want string) {
 
 	if got != want {
 		t.Errorf("got %s want %s", got, want)
+	}
+}
+
+func assertError(t testing.TB, got, want error) {
+	t.Helper()
+
+	if got != want {
+		t.Errorf("got error %q want %q", got, want)
 	}
 }
