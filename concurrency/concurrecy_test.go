@@ -6,10 +6,6 @@ import (
 	"time"
 )
 
-func mockWebsiteChecker(url string) bool {
-	return url != "waat://unexisting.god"
-}
-
 func TestCheckWebsites(t *testing.T) {
 	websites := []string{
 		"http://google.com",
@@ -30,9 +26,8 @@ func TestCheckWebsites(t *testing.T) {
 	}
 }
 
-func slowStubWebsiteChecker(_ string) bool {
-	time.Sleep(20 * time.Microsecond)
-	return true
+func mockWebsiteChecker(url string) bool {
+	return url != "waat://unexisting.god"
 }
 
 func BenchmarkCheckWebsites(b *testing.B) {
@@ -46,4 +41,9 @@ func BenchmarkCheckWebsites(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		CheckWebsites(slowStubWebsiteChecker, urls)
 	}
+}
+
+func slowStubWebsiteChecker(_ string) bool {
+	time.Sleep(20 * time.Microsecond)
+	return true
 }
