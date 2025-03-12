@@ -8,24 +8,11 @@ import (
 	"time"
 )
 
-type SpyStore struct {
-	response string
-	canceled bool
-}
-
-func (s *SpyStore) Fetch() string {
-	time.Sleep(50 * time.Microsecond)
-	return s.response
-}
-
-func (s *SpyStore) Cancel() {
-	s.canceled = true
-}
-
 func TestServer(t *testing.T) {
+	data := "dummy data"
+
 	t.Run("returns data from store", func(t *testing.T) {
-		data := "Hello, world"
-		store := &SpyStore{response: data}
+		store := &SpyStore{response: data, t: t}
 		server := Server(store)
 
 		request := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -38,14 +25,11 @@ func TestServer(t *testing.T) {
 			t.Errorf("got %q, want %q", responseBody, data)
 		}
 
-		if store.canceled {
-			t.Error("it should not have cancelled the store")
-		}
+		store.assertWasNotCancelled()
 	})
 
 	t.Run("tells store to cancel the work if request is canceled", func(t *testing.T) {
-		data := "Dummy data"
-		store := &SpyStore{response: data}
+		store := &SpyStore{response: data, t: t}
 		server := Server(store)
 
 		request := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -58,8 +42,38 @@ func TestServer(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
-		if !store.canceled {
-			t.Error("store was not told to cancel")
-		}
+		store.assertWasCancelled()
 	})
+}
+
+// SpyStore allows you to simulate a store and see how its used.
+type SpyStore struct {
+	response  string
+	cancelled bool
+	t         *testing.T
+}
+
+// Fetch returns response after a short delay.
+func (s *SpyStore) Fetch() string {
+	time.Sleep(50 * time.Millisecond)
+	return s.response
+}
+
+// Cancel will record the call.
+func (s *SpyStore) Cancel() {
+	s.cancelled = true
+}
+
+func (s *SpyStore) assertWasCancelled() {
+	s.t.Helper()
+	if !s.cancelled {
+		s.t.Error("store was not told to cancel")
+	}
+}
+
+func (s *SpyStore) assertWasNotCancelled() {
+	s.t.Helper()
+	if s.cancelled {
+		s.t.Error("store was told to cancel")
+	}
 }
