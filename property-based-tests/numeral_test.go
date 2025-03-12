@@ -3,7 +3,47 @@ package numeral
 import (
 	"fmt"
 	"testing"
+	"testing/quick"
 )
+
+func TestConvertToRoman(t *testing.T) {
+	for _, tt := range cases {
+		t.Run(fmt.Sprintf("%d gets converted %q", tt.Arabic, tt.Roman), func(t *testing.T) {
+			got := ConvertToRoman(tt.Arabic)
+			if got != tt.Roman {
+				t.Errorf("got %q want %q", got, tt.Roman)
+			}
+		})
+	}
+}
+
+func TestConvertingToArabic(t *testing.T) {
+	for _, test := range cases[:1] {
+		t.Run(fmt.Sprintf("%q gets converted to %d", test.Roman, test.Arabic), func(t *testing.T) {
+			got := ConvertToArabic(test.Roman)
+			if got != test.Arabic {
+				t.Errorf("got %d, want %d", got, test.Arabic)
+			}
+		})
+	}
+}
+
+func TestPropertiesOfConversion(t *testing.T) {
+	assertion := func(arabic int) bool {
+		if arabic < 0 || arabic > 3999 {
+			fmt.Println(arabic)
+			return true
+		}
+
+		roman := ConvertToRoman(arabic)
+		fromRoman := ConvertToArabic(roman)
+		return fromRoman == arabic
+	}
+
+	if err := quick.Check(assertion, nil); err != nil {
+		t.Error("failed checks", err)
+	}
+}
 
 var cases = []struct {
 	Arabic int
@@ -38,26 +78,4 @@ var cases = []struct {
 	{Arabic: 2014, Roman: "MMXIV"},
 	{Arabic: 1006, Roman: "MVI"},
 	{Arabic: 798, Roman: "DCCXCVIII"},
-}
-
-func TestConvertToRoman(t *testing.T) {
-	for _, tt := range cases {
-		t.Run(fmt.Sprintf("%d gets converted %q", tt.Arabic, tt.Roman), func(t *testing.T) {
-			got := ConvertToRoman(tt.Arabic)
-			if got != tt.Roman {
-				t.Errorf("got %q want %q", got, tt.Roman)
-			}
-		})
-	}
-}
-
-func TestConvertingToArabic(t *testing.T) {
-	for _, test := range cases[:1] {
-		t.Run(fmt.Sprintf("%q gets converted to %d", test.Roman, test.Arabic), func(t *testing.T) {
-			got := ConvertToArabic(test.Roman)
-			if got != test.Arabic {
-				t.Errorf("got %d, want %d", got, test.Arabic)
-			}
-		})
-	}
 }
