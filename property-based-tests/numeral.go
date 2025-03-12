@@ -6,10 +6,10 @@ import "strings"
 func ConvertToRoman(arabic int) string {
 	var result strings.Builder
 
-	for _, digit := range allRomanNumerals {
-		for arabic >= digit.Value {
-			result.WriteString(digit.Symbol)
-			arabic -= digit.Value
+	for _, numeral := range allRomanNumerals {
+		for arabic >= numeral.Value {
+			result.WriteString(numeral.Symbol)
+			arabic -= numeral.Value
 		}
 	}
 
