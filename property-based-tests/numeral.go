@@ -18,7 +18,16 @@ func ConvertToRoman(arabic int) string {
 
 // ConvertToArabic converts a Roman Numeral to an Arabic number.
 func ConvertToArabic(roman string) int {
-	return 0
+	var arabic int
+
+	for _, numeral := range allRomanNumerals {
+		for strings.HasPrefix(roman, numeral.Symbol) {
+			arabic += numeral.Value
+			roman = strings.TrimPrefix(roman, numeral.Symbol)
+		}
+	}
+
+	return arabic
 }
 
 type romanNumeral struct {
