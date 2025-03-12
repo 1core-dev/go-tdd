@@ -16,6 +16,11 @@ func ConvertToRoman(arabic int) string {
 	return result.String()
 }
 
+// ConvertToArabic converts a Roman Numeral to an Arabic number.
+func ConvertToArabic(roman string) int {
+	return 0
+}
+
 type romanNumeral struct {
 	Value  int
 	Symbol string
