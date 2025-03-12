@@ -1,29 +1,25 @@
 package context
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 )
 
+// Store fetches data.
 type Store interface {
-	Fetch() string
-	Cancel()
+	Fetch(ctx context.Context) (string, error)
 }
 
+// Server returns a handler for calling Store.
 func Server(s Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+		data, err := s.Fetch(r.Context())
 
-		data := make(chan string, 1)
-		go func() {
-			data <- s.Fetch()
-		}()
-
-		select {
-		case d := <-data:
-			fmt.Fprint(w, d)
-		case <-ctx.Done():
-			s.Cancel()
+		if err != nil {
+			// TODO. Handle error
+			return
 		}
+		fmt.Fprint(w, data)
 	}
 }
