@@ -1,17 +1,45 @@
 package blogposts
 
 import (
+	"io"
 	"io/fs"
-	"testing/fstest"
 )
 
-func NewPostsFromFS(fileSystem fstest.MapFS) []Post {
-	dir, _ := fs.ReadDir(fileSystem, ".")
+// NewPostsFromFS returns a collection of blog posts from a file system.
+// If it does not conform to the format then it'll return an error
+func NewPostsFromFS(fileSystem fs.FS) ([]Post, error) {
+	dir, err := fs.ReadDir(fileSystem, ".")
 
-	var posts []Post
-	for range dir {
-		posts = append(posts, Post{})
+	if err != nil {
+		return nil, err
 	}
 
-	return posts
+	var posts []Post
+
+	for _, file := range dir {
+		post, err := getPost(fileSystem, file)
+		if err != nil {
+			return nil, err
+		}
+
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
+func getPost(fs fs.FS, file fs.DirEntry) (Post, error) {
+	postFile, err := fs.Open(file.Name())
+	if err != nil {
+		return Post{}, err
+	}
+	defer postFile.Close()
+
+	postData, err := io.ReadAll(postFile)
+	if err != nil {
+		return Post{}, err
+	}
+
+	post := Post{Title: string(postData)[7:]}
+	return post, nil
 }
