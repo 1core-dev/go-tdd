@@ -3,35 +3,40 @@ package generics
 import "testing"
 
 func TestStack(t *testing.T) {
-	t.Run("test stack of integers", func(t *testing.T) {
-		intStack := StackOfInts{}
+	t.Run("integer stack", func(t *testing.T) {
+		stackOfInts := new(Stack[int])
 
-		AssertTrue(t, intStack.IsEmpty())
+		AssertTrue(t, stackOfInts.IsEmpty())
 
-		intStack.Push(42)
-		AssertFalse(t, intStack.IsEmpty())
+		stackOfInts.Push(123)
+		AssertFalse(t, stackOfInts.IsEmpty())
 
-		intStack.Push(1337)
-		value, _ := intStack.Pop()
+		stackOfInts.Push(1337)
+		value, _ := stackOfInts.Pop()
 		AssertEqual(t, value, 1337)
+		value, _ = stackOfInts.Pop()
+		AssertEqual(t, value, 123)
+		AssertTrue(t, stackOfInts.IsEmpty())
 
-		value, _ = intStack.Pop()
-		AssertEqual(t, value, 42)
-		AssertTrue(t, intStack.IsEmpty())
+		stackOfInts.Push(1)
+		stackOfInts.Push(2)
+		firstNum, _ := stackOfInts.Pop()
+		secondNum, _ := stackOfInts.Pop()
+		AssertEqual(t, firstNum+secondNum, 3)
 	})
 	t.Run("string stack", func(t *testing.T) {
-		myStackOfStrings := StackOfStrings{}
+		stackOfInts := new(Stack[string])
 
-		AssertTrue(t, myStackOfStrings.IsEmpty())
+		AssertTrue(t, stackOfInts.IsEmpty())
 
-		myStackOfStrings.Push("123")
-		AssertFalse(t, myStackOfStrings.IsEmpty())
+		stackOfInts.Push("123")
+		AssertFalse(t, stackOfInts.IsEmpty())
 
-		myStackOfStrings.Push("456")
-		value, _ := myStackOfStrings.Pop()
-		AssertEqual(t, value, "456")
-		value, _ = myStackOfStrings.Pop()
+		stackOfInts.Push("1337")
+		value, _ := stackOfInts.Pop()
+		AssertEqual(t, value, "1337")
+		value, _ = stackOfInts.Pop()
 		AssertEqual(t, value, "123")
-		AssertTrue(t, myStackOfStrings.IsEmpty())
+		AssertTrue(t, stackOfInts.IsEmpty())
 	})
 }
