@@ -16,7 +16,6 @@ func TestNewBlogPosts(t *testing.T) {
 		"hello-world2.md": {Data: []byte("Title: Post 2")},
 	}
 
-	// posts, err := blogposts.NewPostsFromFS(StubFailingFS{})
 	posts, err := blogposts.NewPostsFromFS(fs)
 
 	if err != nil {
