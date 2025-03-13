@@ -39,15 +39,21 @@ func getPost(fs fs.FS, fileName string) (Post, error) {
 	return newPost(postFile)
 }
 
+const (
+	titleSeparator       = "Title: "
+	descriptionSeparator = "Description: "
+)
+
 func newPost(postFile io.Reader) (Post, error) {
 	scanner := bufio.NewScanner(postFile)
 
-	scanner.Scan()
-	titleLine := scanner.Text()
+	readLine := func() string {
+		scanner.Scan()
+		return scanner.Text()
+	}
 
-	scanner.Scan()
-	descriptionLine := scanner.Text()
+	titleLine := readLine()[len(titleSeparator):]
+	descriptionLine := readLine()[len(descriptionSeparator):]
 
-	post := Post{Title: titleLine[7:], Description: descriptionLine[13:]}
-	return post, nil
+	return Post{Title: titleLine, Description: descriptionLine}, nil
 }
