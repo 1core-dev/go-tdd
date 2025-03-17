@@ -14,7 +14,7 @@ type InMemoryPlayerStore struct {
 	store map[string]int
 }
 
-// NewInMemoryPlayerStore initialises an empty player store.
+// NewInMemoryPlayerStore initializes an empty player store.
 func NewInMemoryPlayerStore() *InMemoryPlayerStore {
 	return &InMemoryPlayerStore{
 		store: map[string]int{},
