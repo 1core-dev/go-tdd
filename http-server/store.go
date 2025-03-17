@@ -2,17 +2,23 @@ package main
 
 import "sync"
 
-// NewInMemoryPlayerStore initialises an empty player store.
-func NewInMemoryPlayerStore() *InMemoryPlayerStore {
-	return &InMemoryPlayerStore{
-		store: map[string]int{},
-	}
+// PlayerStore defines methods to get a player's score and record wins.
+type PlayerStore interface {
+	GetPlayerScore(name string) int
+	RecordWin(name string)
 }
 
 // InMemoryPlayerStore collects data about players in memory.
 type InMemoryPlayerStore struct {
 	mu    sync.RWMutex
 	store map[string]int
+}
+
+// NewInMemoryPlayerStore initialises an empty player store.
+func NewInMemoryPlayerStore() *InMemoryPlayerStore {
+	return &InMemoryPlayerStore{
+		store: map[string]int{},
+	}
 }
 
 // RecordWin will record a player's win.

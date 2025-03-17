@@ -6,23 +6,27 @@ import (
 	"strings"
 )
 
-// PlayerStore defines methods to get a player's score and record wins.
-type PlayerStore interface {
-	GetPlayerScore(name string) int
-	RecordWin(name string)
-}
-
 // PlayerServer handles HTTP requests related to player scores.
 type PlayerServer struct {
-	store PlayerStore
+	store  PlayerStore
+	router *http.ServeMux
+}
+
+func NewPlayerServer(store PlayerStore) *PlayerServer {
+	p := &PlayerServer{
+		store:  store,
+		router: http.NewServeMux(),
+	}
+
+	p.router.Handle("/league", http.HandlerFunc(p.leagueHandler))
+	p.router.Handle("/players/", http.HandlerFunc(p.playersHandler))
+
+	return p
 }
 
 // ServeHTTP handles incoming HTTP requests for player data.
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	router := http.NewServeMux()
-
-	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
-	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
+	p.router.ServeHTTP(w, r)
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
