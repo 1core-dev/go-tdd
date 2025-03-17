@@ -6,15 +6,18 @@ import (
 	"strings"
 )
 
+// PlayerStore defines methods to get a player's score and record wins.
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
 }
 
+// PlayerServer handles HTTP requests related to player scores.
 type PlayerServer struct {
 	store PlayerStore
 }
 
+// ServeHTTP handles incoming HTTP requests for player data.
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	player := strings.TrimPrefix(r.URL.Path, "/players/")
 
