@@ -6,6 +6,7 @@ import "sync"
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
+	GetLeague() []Player
 }
 
 // InMemoryPlayerStore collects data about players in memory.
@@ -35,4 +36,8 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
 	defer i.mu.RUnlock()
 
 	return i.store[name]
+}
+
+func (i *InMemoryPlayerStore) GetLeague() []Player {
+	return nil
 }

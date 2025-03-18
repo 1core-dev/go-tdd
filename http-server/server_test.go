@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"testing"
 )
 
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
+	league   []Player
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -21,13 +23,18 @@ func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
 }
 
+func (s *StubPlayerStore) GetLeague() []Player {
+	return s.league
+}
+
 func TestGETPlayer(t *testing.T) {
 	store := StubPlayerStore{
-		map[string]int{
+		scores: map[string]int{
 			"John":  42,
 			"Alice": 24,
 		},
-		nil,
+		winCalls: nil,
+		league:   nil,
 	}
 	server := NewPlayerServer(&store)
 	t.Run("returns John's score", func(t *testing.T) {
@@ -62,8 +69,9 @@ func TestGETPlayer(t *testing.T) {
 
 func TestStoreWins(t *testing.T) {
 	store := StubPlayerStore{
-		map[string]int{},
-		nil,
+		scores:   map[string]int{},
+		winCalls: nil,
+		league:   nil,
 	}
 	server := NewPlayerServer(&store)
 
@@ -88,10 +96,16 @@ func TestStoreWins(t *testing.T) {
 }
 
 func TestLeague(t *testing.T) {
-	store := StubPlayerStore{}
-	server := NewPlayerServer(&store)
+	t.Run("it returns the league table as JSON", func(t *testing.T) {
+		wantedLeague := []Player{
+			{"Ada", 11},
+			{"Alan", 21},
+			{"Grace", 31},
+		}
 
-	t.Run("it returns 200 on /league", func(t *testing.T) {
+		store := StubPlayerStore{league: wantedLeague}
+		server := NewPlayerServer(&store)
+
 		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
 		response := httptest.NewRecorder()
 
@@ -105,6 +119,10 @@ func TestLeague(t *testing.T) {
 		}
 
 		assertStatus(t, response.Code, http.StatusOK)
+
+		if !slices.Equal(got, wantedLeague) {
+			t.Errorf("got %v want %v", got, wantedLeague)
+		}
 	})
 }
 
