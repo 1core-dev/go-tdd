@@ -6,11 +6,13 @@ import (
 	"testing"
 )
 
-func TestRecordingAndRetrievingWin(t *testing.T) {
-	store := NewInMemoryPlayerStore()
-	// database, cleanDatabase := createTempFile(t, "")
-	// defer cleanDatabase()
-	// store := &FileSystemPlayerStore{database}
+func TestRecordingWinsAndRetrievingThem(t *testing.T) {
+	database, cleanDatabase := createTempFile(t, `[]`)
+	defer cleanDatabase()
+	store, err := NewFileSystemPlayerStore(database)
+
+	assertNoError(t, err)
+
 	server := NewPlayerServer(store)
 	player := "Peter"
 
