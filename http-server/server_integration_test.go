@@ -8,6 +8,9 @@ import (
 
 func TestRecordingAndRetrievingWin(t *testing.T) {
 	store := NewInMemoryPlayerStore()
+	// database, cleanDatabase := createTempFile(t, "")
+	// defer cleanDatabase()
+	// store := &FileSystemPlayerStore{database}
 	server := NewPlayerServer(store)
 	player := "Peter"
 
