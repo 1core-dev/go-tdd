@@ -5,38 +5,37 @@ import (
 	"io"
 )
 
+// FileSystemPlayerStore stores players in the filesystem.
 type FileSystemPlayerStore struct {
 	database io.ReadWriteSeeker
 }
 
-func (fs *FileSystemPlayerStore) GetLeague() []Player {
+// GetLeague returns the scores of all the players.
+func (fs *FileSystemPlayerStore) GetLeague() League {
 	fs.database.Seek(0, io.SeekStart)
 
 	league, _ := NewLeague(fs.database)
 	return league
 }
 
+// GetPlayerScore retrieves a player's score.
 func (fs *FileSystemPlayerStore) GetPlayerScore(name string) int {
-	var wins int
+	player := fs.GetLeague().Find(name)
 
-	for _, player := range fs.GetLeague() {
-		if player.Name == name {
-			wins = player.Wins
-			break
-		}
+	if player != nil {
+		return player.Wins
 	}
 
-	return wins
+	return 0
 }
 
+// RecordWin will store a win for a player, incrementing wins if already known.
 func (fs *FileSystemPlayerStore) RecordWin(name string) {
 	league := fs.GetLeague()
+	player := league.Find(name)
 
-	for i, player := range league {
-		if player.Name == name {
-			player.Wins++
-			league[i].Wins++
-		}
+	if player != nil {
+		player.Wins++
 	}
 
 	fs.database.Seek(0, io.SeekStart)
