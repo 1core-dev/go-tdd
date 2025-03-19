@@ -9,6 +9,13 @@ import (
 
 const jsonContentType = "application/json"
 
+// PlayerStore defines methods to get a player's score and record wins.
+type PlayerStore interface {
+	GetPlayerScore(name string) int
+	RecordWin(name string)
+	GetLeague() []Player
+}
+
 // Player stores a name with a number of wins.
 type Player struct {
 	Name string
